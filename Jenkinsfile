@@ -31,9 +31,11 @@ pipeline {
                 sh './jenkins/scripts/deliver.sh' 
             }
         }
-        stage('Image_Build') {
-            steps {
-                app = docker.build("getintodevops/hellonode"
+        stage('Building image') {
+            steps{
+                script {
+                docker.build registry + ":$BUILD_NUMBER"
+                }
             }
         }
         stage('Push image') {
