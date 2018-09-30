@@ -3,12 +3,13 @@ pipeline {
         registry = "charanreddybr05/cherry"
         registryCredential = 'docker-hub-credentials'
     }
-    agent {
-        docker {
-            image 'maven:3-alpine'
-            args '-v /root/.m2:/root/.m2'
-        }
-    }
+    agent none
+    //agent {
+    //    docker {
+    //        image 'maven:3-alpine'
+    //        args '-v /root/.m2:/root/.m2'
+    //    }
+    //}
     stages {
         stage('Clone repository') {
         /* Let's make sure we have the repository cloned to our workspace */
@@ -17,11 +18,23 @@ pipeline {
             }
         }
         stage('Build') {
+            agent {
+            docker {
+                image 'maven:3-alpine'
+                args '-v /root/.m2:/root/.m2'
+                }
+            }
             steps {
                 sh 'mvn -B -DskipTests clean package'
             }
         }
         stage('Test') {
+            agent {
+            docker {
+                image 'maven:3-alpine'
+                args '-v /root/.m2:/root/.m2'
+                }
+            }
             steps {
                 sh 'mvn test'
             }
@@ -32,11 +45,18 @@ pipeline {
             }
         }
         stage('Deliver') { 
+            agent {
+            docker {
+                image 'maven:3-alpine'
+                args '-v /root/.m2:/root/.m2'
+                }
+            }
             steps {
                 sh './jenkins/scripts/deliver.sh' 
             }
         }
         stage('Building image') {
+            agent any
             steps {
                 script {
                 dockerImage = docker.build registry + ":$BUILD_NUMBER"
@@ -44,6 +64,7 @@ pipeline {
             }
         }
         stage('Push image') {
+            agent any
             steps {
                 //script {
                 //docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
