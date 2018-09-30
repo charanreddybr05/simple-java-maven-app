@@ -1,4 +1,8 @@
 pipeline {
+    environment {
+        registry = "charanreddybr05/cherry"
+        registryCredential = 'docker-hub-credentials'
+    }
     agent {
         docker {
             image 'maven:3-alpine'
